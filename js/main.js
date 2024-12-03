@@ -1,7 +1,7 @@
 // contenedor donde se dibujaran los productos
 const products = document.getElementById("prods");
 // accede a los elementos de la plantilla
-const templateCard = document.querySelector("#template-card").content;
+let templateCard = document.querySelector("#template-card").content;
 // items del carrito
 const items = document.getElementById("items");
 // footer carrito
@@ -14,6 +14,7 @@ const templateCartItem = document.querySelector("#template-cart-item").content;
 const fragment = document.createDocumentFragment();
 // obj carrito
 let carrito = {};
+let viewProducts = []
 
 document.addEventListener("DOMContentLoaded", function () {
     if (localStorage.getItem("carrito")) {
@@ -25,15 +26,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
 const fetchProds = async () => {
     try {
-        const res = await fetch("./db.json");
+        const res = await fetch("https://fakestoreapi.com/products?limit=10");
         const data = await res.json();
-        drawCards(data);
+        viewProducts = data
+        drawProductCards(data);
     } catch (error) {
         console.error(error);
     }
 }
 
-const drawCards = (prods) => {
+const drawProductCards = (prods) => {
+    products.innerHTML = null
     prods.forEach((prod) => {
         // titulo
         templateCard.querySelector("h5").textContent = prod.title;
@@ -187,3 +190,9 @@ const btnAction = (decrease, prod) => {
 
     drawCart();
 };
+
+const searchProducts = () => {
+    const search = document.getElementById("searchInput").value.toLowerCase()
+    const filtered = viewProducts.filter((product) => product.title.toLowerCase().includes(search))
+    drawProductCards(filtered)
+}
